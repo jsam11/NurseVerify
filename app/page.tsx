@@ -25,7 +25,7 @@ export default function HomePage() {
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
-                href="/dashboard"
+                href="/sign-up"
                 className="focus-ring rounded-md bg-accent-700 px-5 py-3 text-center text-sm font-semibold text-white shadow-sm hover:bg-accent-900"
               >
                 Get Started Free

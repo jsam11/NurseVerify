@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit --project tsconfig.typecheck.json"
   },
   "dependencies": {
+    "@clerk/nextjs": "^7.5.9",
     "@prisma/client": "^6.19.0",
     "next": "16.2.9",
     "react": "19.2.7",
