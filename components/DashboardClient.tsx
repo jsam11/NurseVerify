@@ -159,7 +159,7 @@ function MapView({
   );
 }
 
-export function DashboardClient({ initialResults }: { initialResults: SanctionRecord[] }) {
+export function DashboardClient({ initialResults, userEmail }: { initialResults: SanctionRecord[]; userEmail: string }) {
   const [fullName, setFullName] = useState("");
   const [state, setState] = useState("");
   const [results, setResults] = useState(initialResults);
@@ -257,6 +257,7 @@ export function DashboardClient({ initialResults }: { initialResults: SanctionRe
       <div className="mb-8">
         <p className="text-sm font-semibold uppercase tracking-wide text-accent-700">Demo Dashboard</p>
         <h1 className="mt-2 text-3xl font-bold tracking-normal text-slate-950">Nurse Verify Search</h1>
+        <p className="mt-2 text-sm text-slate-600">Welcome back, {userEmail}</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
