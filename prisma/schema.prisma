@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LicenseType {
+  RN
+  LPN
+  APRN
+  CNA
+  OTHER
+}
+
+enum SanctionType {
+  REVOCATION
+  SUSPENSION
+  VOLUNTARY_SURRENDER
+  REPRIMAND
+  PROBATION
+  CONSENT_ORDER
+  FINE
+  DENIAL
+}
+
+enum SourceType {
+  WEBPAGE
+  PDF
+}
+
+model SanctionRecord {
+  recordId           String       @id
+  fullName           String
+  state              String
+  licenseType        LicenseType
+  licenseNumber      String?
+  sanctionType       SanctionType
+  effectiveDate      String?
+  employerOrFacility String?
+  reason             String
+  sourceUrl          String
+  sourceType         SourceType
+  lastRefreshed      String
+
+  @@index([fullName])
+  @@index([state])
+}

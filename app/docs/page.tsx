@@ -4,8 +4,8 @@ export default function DocsPage() {
       <p className="text-sm font-semibold uppercase tracking-wide text-accent-700">API Docs</p>
       <h1 className="mt-3 text-4xl font-bold tracking-normal text-slate-950">Search API</h1>
       <p className="mt-4 max-w-2xl text-lg leading-8 text-slate-600">
-        Phase 1 exposes a local demo endpoint that searches fictional seed data and returns source-attributed sanction
-        records.
+        The search endpoint queries Postgres and returns source-attributed sanction records. Name matching is fuzzy
+        contains matching, case-insensitive, and every returned record must include official source verification.
       </p>
       <div className="mt-10 grid gap-6 lg:grid-cols-2">
         <article className="rounded border border-slate-200 bg-white p-6 shadow-sm">
@@ -44,6 +44,13 @@ Content-Type: application/json
           </pre>
         </article>
       </div>
+      <article className="mt-6 rounded border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-slate-950">Source verification</h2>
+        <p className="mt-3 text-sm leading-6 text-slate-600">
+          API consumers should treat `sourceUrl`, `sourceType`, and `lastRefreshed` as required compliance fields.
+          Records without official source attribution should not be displayed or used for screening workflows.
+        </p>
+      </article>
     </section>
   );
 }

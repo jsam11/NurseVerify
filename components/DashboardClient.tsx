@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { states } from "@/lib/states";
 import type { SanctionRecord, SanctionType } from "@/lib/types";
 
@@ -166,29 +166,81 @@ export function DashboardClient({ initialResults }: { initialResults: SanctionRe
   const [history, setHistory] = useState<SearchHistoryItem[]>([]);
   const [selectedRecord, setSelectedRecord] = useState<SanctionRecord | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
 
-  async function runSearch(nextState = state) {
+  async function runSearch(nextState = state, shouldRecordHistory = true) {
     setIsSearching(true);
-    const response = await fetch("/api/search", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fullName, state: nextState || undefined })
-    });
-    const data = (await response.json()) as { results: SanctionRecord[] };
-    setResults(data.results);
-    setHistory((items) =>
-      [
-        {
-          id: `${Date.now()}`,
-          fullName: fullName.trim() || "All names",
-          state: nextState || "All states",
-          timestamp: new Date().toISOString()
-        },
-        ...items
-      ].slice(0, 5)
-    );
-    setIsSearching(false);
+    setSearchError(null);
+
+    try {
+      const response = await fetch("/api/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fullName, state: nextState || undefined })
+      });
+
+      if (!response.ok) {
+        throw new Error("Search is temporarily unavailable.");
+      }
+
+      const data = (await response.json()) as { results: SanctionRecord[] };
+      setResults(data.results);
+
+      if (shouldRecordHistory) {
+        setHistory((items) =>
+          [
+            {
+              id: `${Date.now()}`,
+              fullName: fullName.trim() || "All names",
+              state: nextState || "All states",
+              timestamp: new Date().toISOString()
+            },
+            ...items
+          ].slice(0, 5)
+        );
+      }
+    } catch {
+      setResults([]);
+      setSearchError("Database search is unavailable. Confirm DATABASE_URL is set and migrations have run.");
+    } finally {
+      setIsSearching(false);
+    }
   }
+
+  useEffect(() => {
+    let isActive = true;
+
+    async function loadInitialResults() {
+      try {
+        const response = await fetch("/api/search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fullName: "" })
+        });
+
+        if (!response.ok) {
+          throw new Error("Initial search failed.");
+        }
+
+        const data = (await response.json()) as { results: SanctionRecord[] };
+        if (isActive) {
+          setResults(data.results);
+          setSearchError(null);
+        }
+      } catch {
+        if (isActive) {
+          setResults([]);
+          setSearchError("Database search is unavailable. Confirm DATABASE_URL is set and migrations have run.");
+        }
+      }
+    }
+
+    void loadInitialResults();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -300,6 +352,11 @@ export function DashboardClient({ initialResults }: { initialResults: SanctionRe
                 <p className="mt-1 text-sm text-slate-600">{results.length} source-attributed demo records found.</p>
               </div>
             </div>
+            {searchError ? (
+              <div className="mb-4 rounded border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-900">
+                {searchError}
+              </div>
+            ) : null}
             <div className="space-y-4">
               {results.map((record) => (
                 <article key={record.recordId} className="rounded border border-slate-200 bg-white p-5 shadow-sm">
