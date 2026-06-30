@@ -1,8 +1,3 @@
-## SHARED CONTEXT (also save this as `AGENTS.md` in your repo)
-
-Codex automatically reads a file named `AGENTS.md` at the root of your repo and follows it on every task. Create that file (the guide explains how) and paste this in:
-
-```markdown
 # Project: Nurse Sanctions Search
 
 ## What this is
@@ -45,4 +40,3 @@ Modeled on the structure of teachersanctions.io, adapted for nurses.
 ## Review guidelines
 - Flag any code that displays a record without a source link.
 - Flag any place where real (non-fictional) personal names are hardcoded.
-```
